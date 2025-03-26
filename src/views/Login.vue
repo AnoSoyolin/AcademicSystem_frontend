@@ -4,7 +4,7 @@
       <template #header>
         <h2>教务系统登录</h2>
       </template>
-      
+
       <el-form :model="loginForm" :rules="rules" ref="loginFormRef">
         <el-form-item prop="college">
           <el-select v-model="loginForm.college" placeholder="请选择学院">
@@ -13,25 +13,25 @@
             <el-option label="学院C" value="C" />
           </el-select>
         </el-form-item>
-        
+
         <el-form-item prop="username">
-          <el-input 
-            v-model="loginForm.username" 
+          <el-input
+            v-model="loginForm.username"
             placeholder="用户名"
             prefix-icon="User"
           />
         </el-form-item>
-        
+
         <el-form-item prop="password">
-          <el-input 
-            v-model="loginForm.password" 
-            type="password" 
+          <el-input
+            v-model="loginForm.password"
+            type="password"
             placeholder="密码"
             prefix-icon="Lock"
             show-password
           />
         </el-form-item>
-        
+
         <el-form-item>
           <el-button type="primary" @click="handleLogin" :loading="loading" class="login-button">
             登录
@@ -72,12 +72,21 @@ const rules = reactive<FormRules>({
 
 const handleLogin = async () => {
   if (!loginFormRef.value) return
-  
+
   await loginFormRef.value.validate(async (valid) => {
     if (valid) {
       loading.value = true
       try {
         // TODO: 实现实际的登录逻辑
+        // 添加 root 账户验证
+        if (loginForm.username === 'root' && loginForm.password === '123456') {
+          localStorage.setItem('token', 'admin-token')
+          localStorage.setItem('college', loginForm.college)
+          localStorage.setItem('role', 'admin')
+          ElMessage.success('管理员登录成功')
+          router.push('/dashboard')
+          return
+        }
         localStorage.setItem('token', 'dummy-token')
         localStorage.setItem('college', loginForm.college)
         ElMessage.success('登录成功')
@@ -108,4 +117,4 @@ const handleLogin = async () => {
 .login-button {
   width: 100%;
 }
-</style> 
+</style>
